@@ -14,6 +14,7 @@ import {
 } from "node:fs";
 import { isAbsolute, join, relative, resolve, sep } from "node:path";
 import { VERSION } from "../src/version";
+import { createBinWrappers, supportsSymlinks } from "./prepare-linux-filesystem";
 
 const root = resolve(import.meta.dir, "..");
 const packageJson = JSON.parse(readFileSync(join(root, "package.json"), "utf8")) as {
@@ -82,13 +83,28 @@ if (!browserHelperBuild.success) {
 
 copyFileSync(join(root, "package.json"), join(appDir, "package.json"));
 copyFileSync(join(root, "bun.lock"), join(appDir, "bun.lock"));
-const install = Bun.spawnSync([process.execPath, "install", "--production", "--frozen-lockfile", "--ignore-scripts"], {
+const runtimeSupportsSymlinks = supportsSymlinks(appDir);
+const install = Bun.spawnSync([
+  process.execPath,
+  "install",
+  "--production",
+  "--frozen-lockfile",
+  "--ignore-scripts",
+  ...(runtimeSupportsSymlinks ? [] : ["--linker", "hoisted", "--backend", "copyfile"]),
+], {
   cwd: appDir,
   stdout: "pipe",
   stderr: "pipe",
 });
-if (install.exitCode !== 0) {
+if (install.exitCode !== 0 && runtimeSupportsSymlinks) {
   throw new Error(`Runtime dependencies failed to install: ${install.stderr.toString() || install.stdout.toString()}`);
+}
+if (!runtimeSupportsSymlinks) {
+  const outputText = `${install.stderr.toString()}\n${install.stdout.toString()}`;
+  if (install.exitCode !== 0 && !/Failed to link .+: EPERM/.test(outputText)) {
+    throw new Error(`Runtime dependencies failed to install: ${outputText}`);
+  }
+  createBinWrappers(join(appDir, "node_modules"));
 }
 const bunName = process.platform === "win32" ? "bun.exe" : "bun";
 cpSync(embeddedBunExecutable(), join(runtimeDir, bunName));
