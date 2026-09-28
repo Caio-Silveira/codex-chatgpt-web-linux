@@ -40,7 +40,8 @@ export function createBinWrappers(nodeModules: string): number {
     for (const [name, target] of Object.entries(bins)) {
       const destination = join(binDir, name);
       const targetPath = relative(dirname(destination), join(packageDir, target)).replaceAll("\\", "/");
-      writeFileSync(destination, `#!/bin/sh\nexec bun "$(dirname "$0")/${targetPath}" "$@"\n`);
+      const electronSandboxFallback = process.platform === "linux" && name === "electron" ? " --no-sandbox" : "";
+      writeFileSync(destination, `#!/bin/sh\nexec "${process.execPath}" "$(dirname "$0")/${targetPath}"${electronSandboxFallback} "$@"\n`);
       chmodSync(destination, 0o755);
       count++;
     }

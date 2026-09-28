@@ -75,10 +75,17 @@ test("embedded ChatGPT is measured only after its animated surface mounts", () =
 });
 
 test("native clicks reach browser tabs instead of the window drag region", () => {
-  assert.match(appSource, /draggable=\{surface !== "browser"\}/);
+  assert.match(appSource, /draggable=\{snapshot\.platform !== "linux" && surface !== "browser"\}/);
   assert.match(appSource, /className=\{`app-titlebar\$\{draggable \? " draggable" : ""\}`\}/);
   assert.match(stylesSource, /\.browser-tab\s*\{[^}]*-webkit-app-region:\s*no-drag;/s);
   assert.match(appSource, /className="browser-tab-drag draggable"/);
+});
+
+test("Linux keeps native window decorations while custom chrome stays platform-specific", () => {
+  assert.match(electronMain, /const isWindows = process\.platform === "win32"/);
+  assert.match(electronMain, /\.\.\.\(isMac \? \{[\s\S]*?titleBarStyle: "hiddenInset"/);
+  assert.match(electronMain, /\.\.\.\(isWindows \? \{[\s\S]*?titleBarStyle: "hidden"[\s\S]*?titleBarOverlay:/);
+  assert.doesNotMatch(electronMain, /const isLinux[\s\S]*?titleBarStyle/);
 });
 
 test("renderer zoom scales the shell without moving or zooming the native ChatGPT surface", () => {

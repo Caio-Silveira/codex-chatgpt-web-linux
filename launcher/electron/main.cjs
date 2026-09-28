@@ -382,6 +382,7 @@ function windowStateSnapshot(window) {
 
 function createWindow({ logger, stateStore, windowStatePath, startHidden }) {
   const isMac = process.platform === "darwin";
+  const isWindows = process.platform === "win32";
   const state = stateStore.read();
   const windowState = readWindowState(windowStatePath, screen.getAllDisplays());
   const window = new BrowserWindow({
@@ -396,19 +397,21 @@ function createWindow({ logger, stateStore, windowStatePath, startHidden }) {
     icon: APP_ICON_PATH,
     show: false,
     backgroundColor: isMac ? "#00000000" : "#181818",
-    titleBarStyle: isMac ? "hiddenInset" : "hidden",
     transparent: isMac,
     ...(isMac ? {
+      titleBarStyle: "hiddenInset",
       trafficLightPosition: { x: 16, y: 17 },
       vibrancy: "under-window",
       visualEffectState: "active",
-    } : {
+    } : {}),
+    ...(isWindows ? {
+      titleBarStyle: "hidden",
       titleBarOverlay: {
         color: "#181818",
         symbolColor: "#a8a8a8",
         height: 46,
       },
-    }),
+    } : {}),
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,

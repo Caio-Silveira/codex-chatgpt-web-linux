@@ -537,7 +537,7 @@ function LauncherShell({
       <TitleBar
         copy={copy}
         devProfile={devProfile}
-        draggable={surface !== "browser"}
+        draggable={snapshot.platform !== "linux" && surface !== "browser"}
         sidebarOpen={sidebarOpen}
         toggleSidebar={toggleSidebar}
       />

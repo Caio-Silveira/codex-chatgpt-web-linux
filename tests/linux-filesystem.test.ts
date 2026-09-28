@@ -25,4 +25,17 @@ describe("Linux filesystem preparation", () => {
     expect(wrapper).toContain("../example/cli/index.js");
     expect(wrapper).toStartWith("#!/bin/sh");
   });
+
+  test("adds the Electron sandbox fallback only to Linux Electron wrappers", () => {
+    const root = mkdtempSync(join(tmpdir(), "codex-electron-bin-")); roots.push(root);
+    const modules = join(root, "node_modules");
+    const pkg = join(modules, "electron");
+    mkdirSync(pkg, { recursive: true });
+    writeFileSync(join(pkg, "package.json"), JSON.stringify({ name: "electron", bin: { electron: "cli.js" } }));
+    writeFileSync(join(pkg, "cli.js"), "console.log('electron')\n");
+    createBinWrappers(modules);
+    const wrapper = readFileSync(join(modules, ".bin", "electron"), "utf8");
+    if (process.platform === "linux") expect(wrapper).toContain("--no-sandbox");
+    else expect(wrapper).not.toContain("--no-sandbox");
+  });
 });
