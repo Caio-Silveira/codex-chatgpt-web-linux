@@ -28,6 +28,7 @@
     "doctor": "bun run src/cli.ts doctor",
     "dev:launcher": "bun run src/cli.ts dev launcher",
     "dev:chat": "bun run src/cli.ts dev chat",
+    "prepare:linux-fs": "bun run scripts/prepare-linux-filesystem.ts",
     "test": "bun test ./tests",
     "audit": "bun audit",
     "check-version": "bun run scripts/check-version.ts",

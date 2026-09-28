@@ -41,6 +41,13 @@ Full harness mode connects ChatGPT to the current task’s files, terminal, tool
 
 The app includes its browser and runtime. No separate Chrome, Node, or Bun installation is needed.
 
+> **Linux source development on exFAT or other filesystems without symlinks:** Bun can copy
+> package contents but cannot create the executables in `.bin`. After installing dependencies
+> in the root and `launcher/`, run `bun run prepare:linux-fs`. It detects symlink support and,
+> only when unavailable, generates equivalent real executable wrappers from each package's
+> `package.json#bin` metadata. This is a development-source compatibility path; packaged launcher
+> installs are unchanged.
+
 <details>
 <summary><strong>Terminal install, updates & repair</strong></summary>
 
