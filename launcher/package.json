@@ -84,7 +84,7 @@
     "linux": {
       "category": "Development",
       "syncDesktopName": true,
-      "icon": "assets/icon.png",
+      "icon": "assets/icon-linux.png",
       "target": ["deb", "AppImage"]
     },
     "deb": {

@@ -39,7 +39,7 @@ test("launcher publishes native packages for all supported desktop operating sys
   assert.equal(manifest.homepage, "https://github.com/Caio-Silveira/codex-chatgpt-web-linux");
   assert.equal(manifest.desktopName, "codex-web-gpt");
   assert.equal(manifest.build.linux.syncDesktopName, true);
-  assert.equal(manifest.build.linux.icon, "assets/icon.png");
+  assert.equal(manifest.build.linux.icon, "assets/icon-linux.png");
   assert.equal(manifest.build.deb.maintainer, "Caio Silveira");
   assert.match(manifest.build.deb.synopsis, /ChatGPT Web bridge/);
   assert.equal(manifest.build.deb.compression, "gz");
@@ -48,6 +48,7 @@ test("launcher publishes native packages for all supported desktop operating sys
   assert.ok(manifest.build.asarUnpack.includes("assets/linux-appimage-runner.sh"));
   assert.equal(manifest.build.afterPack, undefined);
   assert.ok(fs.existsSync(path.join(launcherRoot, "assets", "icon.ico")));
+  assert.ok(fs.existsSync(path.join(launcherRoot, "assets", "icon-linux.png")));
   assert.equal(manifest.build.nsis.oneClick, false);
   assert.equal(manifest.build.nsis.perMachine, false);
   assert.equal(manifest.build.nsis.allowElevation, false);
